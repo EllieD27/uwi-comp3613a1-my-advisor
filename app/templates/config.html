@@ -4,8 +4,8 @@
 {% block internal_css %}
 <style>
     body {
-        background: #0f1419;
-        color: #e7ecf3;
+        background: var(--brand-bg);
+        color: var(--brand-ink);
         min-height: 100vh;
     }
     .cfg-wrap {
@@ -14,8 +14,8 @@
         padding: 2rem 1rem 3rem;
     }
     .cfg-card {
-        background: #1a222d;
-        border: 1px solid #2a3544;
+        background: var(--brand-surface);
+        border: 1px solid color-mix(in srgb, var(--squilla-teal) 25%, white);
         border-radius: 0.75rem;
         padding: 1.25rem 1.5rem;
         margin-bottom: 1rem;
@@ -23,29 +23,31 @@
     .cfg-card h2 {
         font-size: 1.1rem;
         margin-bottom: 1rem;
-        color: #9db0c7;
+        color: var(--brand-accent);
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
-    .cfg-muted { color: #8b9bb0; }
-    .badge-ok { background: #198754; }
-    .badge-bad { background: #dc3545; }
+    .cfg-muted { color: var(--brand-muted); }
+    .badge-ok { background: var(--squilla-mint); color: var(--brand-ink); }
+    .badge-bad { background: var(--squilla-warning-bg); color: var(--squilla-warning-ink); }
     table.cfg td, table.cfg th {
-        border-color: #2a3544;
+        border-color: color-mix(in srgb, var(--squilla-teal) 25%, white);
         vertical-align: top;
+        background: var(--squilla-smoke);
+        color: var(--brand-ink);
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         font-size: 0.85rem;
     }
     .btn-row form { display: inline-block; margin: 0.25rem 0.35rem 0.25rem 0; }
     .form-control, .form-select {
-        background: #0f1419;
-        border-color: #2a3544;
-        color: #e7ecf3;
+        background: var(--squilla-smoke);
+        border-color: color-mix(in srgb, var(--squilla-teal) 30%, white);
+        color: var(--brand-ink);
     }
     .form-control:focus, .form-select:focus {
-        background: #0f1419;
-        border-color: #4d6b8a;
-        color: #e7ecf3;
+        background: #ffffff;
+        border-color: var(--squilla-moonstone);
+        color: var(--brand-ink);
         box-shadow: none;
     }
     .alert { border: none; }
@@ -84,7 +86,7 @@
             <p class="cfg-muted mb-0">Ops console — password gated</p>
         </div>
         <form method="post" action="{{ url_for('config_logout_action') }}">
-            <button class="btn btn-outline-light btn-sm" type="submit">Lock</button>
+            <button class="btn btn-outline-secondary btn-sm" type="submit">Lock</button>
         </form>
     </div>
 
@@ -108,7 +110,7 @@
             <span class="badge text-bg-secondary">pid {{ status.pid }}</span>
             <span class="badge text-bg-secondary">up {{ status.uptime }}</span>
         </div>
-        <table class="table table-sm table-dark cfg mb-0">
+        <table class="table table-sm cfg mb-0">
             <tbody>
                 <tr><th>Started (UTC)</th><td>{{ status.started_at }}</td></tr>
                 <tr><th>Now (UTC)</th><td>{{ status.now }}</td></tr>
@@ -126,7 +128,7 @@
     <div class="cfg-card">
         <h2>Config &amp; environment</h2>
         <p class="cfg-muted small">Secrets are masked. Values reflect the live process (after cache clears / ENV toggles).</p>
-        <table class="table table-sm table-dark cfg mb-0">
+        <table class="table table-sm cfg mb-0">
             <tbody>
                 {% for key, value in config.items() %}
                 <tr><th>{{ key }}</th><td>{{ value }}</td></tr>

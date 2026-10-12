@@ -94,12 +94,18 @@ python manage.py init
 |----------|-------------|--------------|
 | `bob`    | `bobpass`   | regular_user |
 | `admin`  | `adminpass` | admin        |
+| `ian`    | `ianpass`   | regular_user |
+| `celeste` | `celestepass` | regular_user |
+| `kate` | `katepass` | regular_user |
+| `nelly` | `nellypass` | regular_user |
 
 Flags:
 
 ```bash
 python manage.py init --no-drop   # create/seed without dropping
 python manage.py init --no-seed   # tables only (skip demo users)
+python manage.py purge-demo-students  # permanently remove retired demo students and their records
+python manage.py sync-degree-requirements  # refresh 23 Core + 8 Elective counts without resetting student work
 ```
 
 Seeding skips usernames that already exist. Add more rows in `cmd_seed` in `app/cli.py`. `python manage.py seed` still works if you only want to (re)insert demo users.

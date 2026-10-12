@@ -1,0 +1,444 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Build Plan{% endblock %}
+
+{% block additional_styles %}
+{{ super() }}
+<style>
+  #sidebar,
+  #content > .navbar {
+    display: none !important;
+  }
+
+  #content {
+    padding: 0 !important;
+    background: var(--squilla-smoke);
+  }
+
+  .plan-shell {
+    width: min(1400px, 100%);
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 2vw, 2.2rem) 2rem;
+  }
+
+  .plan-header {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 35%, white);
+  }
+
+  .plan-brand {
+    color: var(--brand-ink);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  .plan-nav {
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+  }
+
+  .plan-tab {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    color: var(--brand-ink);
+    font-size: 1.1rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .plan-tab.active {
+    font-weight: 700;
+    color: var(--squilla-teal);
+    box-shadow: inset 0 -3px var(--squilla-teal);
+  }
+
+  .plan-user {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: max-content;
+    color: var(--brand-ink);
+  }
+
+  .plan-avatar {
+    width: 2.7rem;
+    height: 2.7rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--squilla-powder);
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+
+  .plan-user small {
+    display: block;
+    color: var(--brand-muted);
+    font-size: 0.875rem;
+  }
+
+  .plan-toolbar {
+    padding: 1.8rem 0 1.3rem;
+  }
+
+  .semester-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--brand-ink);
+  }
+
+  .semester-select {
+    display: inline-block;
+    min-width: min(30rem, 65vw);
+    margin-left: 0.75rem;
+    padding: 0.65rem 2.7rem 0.65rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 42%, white);
+    border-radius: 0.45rem;
+    background: color-mix(in srgb, var(--squilla-powder) 48%, white);
+    font-size: 1rem;
+    color: var(--brand-ink);
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #333 50%), linear-gradient(135deg, #333 50%, transparent 50%);
+    background-position: calc(100% - 1.2rem) calc(50% - 0.15rem), calc(100% - 0.9rem) calc(50% - 0.15rem);
+    background-size: 0.45rem 0.45rem;
+    background-repeat: no-repeat;
+  }
+
+  .plan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .plan-panel {
+    min-height: 560px;
+    padding: 1.3rem 1.2rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 35%, white);
+    border-radius: 1.2rem;
+    background: color-mix(in srgb, var(--squilla-powder) 35%, var(--squilla-smoke));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+  }
+
+  .plan-panel h2 {
+    margin: 0 0 1rem;
+    color: var(--brand-ink);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .course-list {
+    max-height: 440px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+    padding: 0 0.35rem 0 0;
+    margin: 0;
+    scrollbar-gutter: stable;
+  }
+
+  .course-group-label {
+    margin: 0.5rem 0 0.2rem;
+    color: var(--brand-ink);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .course-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.1rem;
+    border-bottom: 1px dashed color-mix(in srgb, var(--squilla-teal) 36%, white);
+    padding: 0.4rem 0;
+    font-size: 1rem;
+  }
+
+  .course-row:first-of-type {
+    margin-top: 0.4rem;
+  }
+
+  .course-code {
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .course-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 10.5rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 0.45rem;
+    background: color-mix(in srgb, var(--squilla-smoke) 70%, transparent);
+    color: var(--brand-ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .course-status.success {
+    color: #245b3b;
+  }
+
+  .course-status.warning {
+    background: var(--squilla-warning-bg);
+    color: var(--squilla-warning-ink);
+  }
+
+  .course-status.action {
+    background: color-mix(in srgb, var(--squilla-powder) 70%, white);
+    color: var(--brand-ink);
+  }
+
+  .course-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 8.2rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 45%, white);
+    border-radius: 0.45rem;
+    background: color-mix(in srgb, var(--squilla-smoke) 65%, transparent);
+    color: var(--brand-ink);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .course-action.add {
+    background: color-mix(in srgb, var(--squilla-moonstone) 28%, white);
+  }
+
+  .course-action.remove {
+    background: color-mix(in srgb, var(--squilla-powder) 44%, white);
+  }
+
+  .plan-selected {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 250px;
+  }
+
+  .selected-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px dashed color-mix(in srgb, var(--squilla-teal) 36%, white);
+    font-size: 1rem;
+  }
+
+  .selected-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .selected-meta small {
+    color: var(--brand-muted);
+    font-size: 0.9em;
+  }
+
+  .summary {
+    margin-top: 1.5rem;
+    padding-top: 0.8rem;
+  }
+
+  .summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    color: var(--brand-ink);
+    font-size: 1.05rem;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 45%, white);
+    background: color-mix(in srgb, var(--squilla-powder) 38%, white);
+    border-radius: 0.4rem;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 0.4rem;
+    background: var(--squilla-moonstone);
+  }
+
+  .success-text {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #245b3b;
+  }
+
+  .submit-btn {
+    display: block;
+    width: 100%;
+    margin-top: 1.4rem;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 42%, white);
+    border-radius: 0.65rem;
+    background: var(--squilla-mint);
+    color: var(--brand-ink);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 980px) {
+    .plan-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .plan-header {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+
+    .plan-nav {
+      order: 3;
+      justify-content: center;
+      width: 100%;
+      min-height: 2.75rem;
+    }
+
+    .semester-label {
+      display: block;
+    }
+
+    .semester-select {
+      display: block;
+      margin: 0.65rem 0 0;
+      width: min(28rem, 90vw);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block subpage_content %}
+<main class="plan-shell">
+  <header class="plan-header">
+    <a class="brand-wordmark plan-brand" href="{{ url_for('index_view') }}">MyAdvisor</a>
+    <nav class="plan-nav" aria-label="Student navigation">
+      <a class="plan-tab" href="{{ url_for('user_home_view') }}">Dashboard</a>
+      <a class="plan-tab active" href="{{ url_for('student_build_plan_view') }}" aria-current="page">Build Plan</a>
+      <a class="plan-tab" href="{{ url_for('student_my_plans_view') }}">My Plans</a>
+    </nav>
+    <div class="plan-user">
+      <span class="plan-avatar" aria-hidden="true">{{ user.username[:1]|upper }}</span>
+      <span>{{ user.username }}<small>Student</small></span>
+    </div>
+  </header>
+
+  <div class="plan-toolbar">
+    <label class="semester-label" for="semester_select">
+      Semester:
+      <select id="semester_select" class="semester-select" aria-label="Select semester">
+        <option selected>{{ plan.semester }}</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="plan-grid" aria-label="Semester plan builder">
+    <article class="plan-panel">
+      <h2>Available Courses:</h2>
+      <ul class="course-list">
+        {% set grouped = {} %}
+        {% for item in plan.available_courses %}
+          {% if grouped[item.group] is not defined %}
+            {% set _ = grouped.__setitem__(item.group, []) %}
+          {% endif %}
+          {% set _ = grouped[item.group].append(item) %}
+        {% endfor %}
+
+        {% for group in grouped.keys()|sort %}
+          {% if grouped.get(group) %}
+            <li class="course-group-label">{{ group }}</li>
+            {% for item in grouped[group] %}
+              <li class="course-row">
+                <span class="course-code">{{ item.code }}</span>
+                {% if item.status == 'Added' %}
+                  <span class="course-status success">✓ Added</span>
+                {% elif item.status == 'Completed' %}
+                  <span class="course-status success">✓ Completed</span>
+                {% elif item.status.startswith('Needs') %}
+                  <span class="course-status warning">! {{ item.status }}</span>
+                {% elif item.status == 'Max credits reached' %}
+                  <span class="course-status warning">{{ item.status }}</span>
+                {% else %}
+                  <form method="post" action="{{ url_for('student_build_plan_submit') }}" style="display:inline;">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="course_code" value="{{ item.code }}">
+                    <button type="submit" class="course-action add">+ Add</button>
+                  </form>
+                {% endif %}
+              </li>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </article>
+
+    <article class="plan-panel">
+      <h2>Your Plan ({{ plan.plan.status }})</h2>
+      <div class="plan-selected">
+        {% for item in plan.selected_courses %}
+          <div class="selected-row">
+            <div class="selected-meta">
+              <span>{{ item.code }}</span>
+              <small>• {{ item.credits }} cr</small>
+            </div>
+            <form method="post" action="{{ url_for('student_build_plan_submit') }}" style="display:inline;">
+              <input type="hidden" name="action" value="remove">
+              <input type="hidden" name="course_code" value="{{ item.code }}">
+              <button type="submit" class="course-action remove">- Remove</button>
+            </form>
+          </div>
+        {% else %}
+          <div class="selected-row text-muted">No courses selected yet.</div>
+        {% endfor %}
+      </div>
+
+      <div class="summary">
+        <div class="summary-row">
+          <span>Credits: {{ plan.plan_total_credits }} / {{ plan.max_credits }}</span>
+        </div>
+        <div class="progress-track" aria-label="Plan credit usage">
+          <div class="progress-bar" style="width: {{ [plan.plan_total_credits / plan.max_credits * 100, 100]|min }}%"></div>
+        </div>
+
+        {% if plan.checks_passed %}
+          <div class="success-text">✓ All checks passed</div>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('student_build_plan_submit') }}">
+          <input type="hidden" name="action" value="submit">
+          <button type="submit" class="submit-btn">Submit for Approval</button>
+        </form>
+      </div>
+    </article>
+  </section>
+</main>
+{% endblock %}

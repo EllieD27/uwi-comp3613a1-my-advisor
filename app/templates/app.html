@@ -1,9 +1,327 @@
 {% extends "authenticated-base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Degree Progress{% endblock %}
+
+{% block additional_styles %}
+{{ super() }}
+<style>
+  #sidebar,
+  #content > .navbar {
+    display: none !important;
+  }
+
+  #content {
+    padding: 0 !important;
+    background: var(--squilla-smoke);
+  }
+
+  .dashboard-shell {
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 3vw, 2.5rem) 2rem;
+  }
+
+  .dashboard-header {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 28%, white);
+  }
+
+  .dashboard-brand {
+    color: var(--brand-ink);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .dashboard-nav {
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    gap: clamp(1.25rem, 4vw, 3.5rem);
+  }
+
+  .dashboard-tab {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    color: var(--brand-ink);
+    font-size: 1.1rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .dashboard-tab.active {
+    color: var(--brand-accent);
+    font-weight: 700;
+    box-shadow: inset 0 -3px var(--brand-accent);
+  }
+
+  .dashboard-tab.future {
+    color: var(--brand-muted);
+  }
+
+  .dashboard-user {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: max-content;
+    color: var(--brand-ink);
+  }
+
+  .dashboard-avatar {
+    width: 2.7rem;
+    height: 2.7rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--squilla-powder);
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+
+  .dashboard-user small {
+    display: block;
+    color: var(--brand-muted);
+  }
+
+  .dashboard-context {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.4rem 0 1.7rem;
+  }
+
+  .context-field {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
+
+  .context-value {
+    min-width: min(29rem, 55vw);
+    padding: 0.45rem 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 35%, white);
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--squilla-powder) 35%, white);
+    box-shadow: 0 2px 5px rgba(23, 63, 67, 0.12);
+    font-weight: 400;
+  }
+
+  .progress-card {
+    height: 100%;
+    min-height: 132px;
+    padding: 1rem 1.15rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 22%, white);
+    border-radius: 0.8rem;
+    background: white;
+    box-shadow: 0 3px 12px rgba(23, 63, 67, 0.08);
+  }
+
+  .progress-card h2 {
+    margin: 0 0 0.65rem;
+    color: var(--brand-ink);
+    font-size: 1.25rem;
+  }
+
+  .progress-card .progress-count {
+    margin-bottom: 0.45rem;
+    font-size: 1.05rem;
+  }
+
+  .progress-card .progress {
+    height: 0.8rem;
+    border: 1px solid var(--squilla-moonstone);
+    background: color-mix(in srgb, var(--squilla-powder) 32%, white);
+  }
+
+  .progress-card .progress-bar {
+    background: var(--squilla-teal);
+  }
+
+  .dashboard-panel {
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 22%, white);
+    border-radius: 1rem;
+    background: #f1f5fa;
+  }
+
+  .dashboard-panel h2 {
+    padding: 1.1rem 1.2rem 0.5rem;
+    color: var(--brand-ink);
+    font-size: 1.25rem;
+  }
+
+  .dashboard-course-list {
+    max-height: 430px;
+    overflow-y: auto;
+  }
+
+  .dashboard-course-list .list-group-item {
+    background: transparent;
+    border-bottom: 1px dashed color-mix(in srgb, var(--squilla-teal) 35%, white);
+  }
+
+  @media (max-width: 850px) {
+    .dashboard-header {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+
+    .dashboard-nav {
+      order: 3;
+      justify-content: center;
+      width: 100%;
+      min-height: 2.75rem;
+    }
+
+    .dashboard-context {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .context-value {
+      min-width: 0;
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .dashboard-brand {
+      font-size: 1.7rem;
+    }
+
+    .dashboard-nav {
+      gap: 1rem;
+    }
+
+    .dashboard-tab {
+      font-size: 0.95rem;
+    }
+
+    .context-field {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block subpage_content %}
-<div class="container-fluid py-2">
-  <h1 class="h4 mb-2">Home</h1>
-  <p class="text-muted mb-0">Workflow screens replace this shell in Phase 5 implement.</p>
-</div>
+<main class="dashboard-shell">
+  <header class="dashboard-header">
+    <a class="brand-wordmark dashboard-brand" href="{{ url_for('index_view') }}">MyAdvisor</a>
+    <nav class="dashboard-nav" aria-label="Student navigation">
+      <a class="dashboard-tab active" href="{{ url_for('user_home_view') }}" aria-current="page">Dashboard</a>
+      <a class="dashboard-tab" href="{{ url_for('student_build_plan_view') }}">Build Plan</a>
+      <a class="dashboard-tab" href="{{ url_for('student_my_plans_view') }}">My Plans</a>
+    </nav>
+    <div class="dashboard-user">
+      <span class="dashboard-avatar" aria-hidden="true">{{ user.username[:1]|upper }}</span>
+      <span>{{ user.username }}<small>Student</small></span>
+    </div>
+  </header>
+
+  <section class="dashboard-context" aria-label="Degree and semester">
+    <div class="context-field">
+      <span>Degree:</span>
+      <span class="context-value">{{ progress.program.name if progress.program else 'No degree assigned' }}</span>
+    </div>
+    <div class="context-field">
+      <span>Semester:</span>
+      <span class="context-value">{{ progress.semester }}</span>
+    </div>
+  </section>
+
+  <section class="row g-3 g-xl-4 mb-4" aria-label="Degree progress summary">
+    <div class="col-xl-3 col-md-6">
+      <article class="progress-card">
+        <h2>Credits earned</h2>
+        <div class="progress-count">{{ progress.earned_credits }} / {{ progress.required_credits }}</div>
+        <div class="progress" role="progressbar" aria-label="Credits earned" aria-valuenow="{{ progress.completion_percent }}" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" style="width: {{ [progress.completion_percent, 100]|min }}%"></div>
+        </div>
+      </article>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <article class="progress-card">
+        <div class="d-flex justify-content-between align-items-center gap-2">
+          <h2>Core (incl. Foundation)</h2>
+          {% if progress.core_required_courses > 0 and progress.core_earned_courses >= progress.core_required_courses %}
+          <span class="badge text-bg-secondary">DONE</span>
+          {% endif %}
+        </div>
+        <div class="progress-count">{{ progress.core_earned_courses }} / {{ progress.core_required_courses }} courses</div>
+        {% set core_percent = (progress.core_earned_courses / progress.core_required_courses * 100) if progress.core_required_courses else 0 %}
+        <div class="progress" role="progressbar" aria-label="Core courses including Foundation" aria-valuenow="{{ core_percent }}" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" style="width: {{ [core_percent, 100]|min }}%"></div>
+        </div>
+      </article>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <article class="progress-card">
+        <h2>Electives</h2>
+        <div class="progress-count">{{ progress.elective_earned_courses }} / {{ progress.elective_required_courses }} courses</div>
+        {% set elective_percent = (progress.elective_earned_courses / progress.elective_required_courses * 100) if progress.elective_required_courses else 0 %}
+        <div class="progress" role="progressbar" aria-label="Elective courses" aria-valuenow="{{ elective_percent }}" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" style="width: {{ [elective_percent, 100]|min }}%"></div>
+        </div>
+      </article>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <article class="progress-card">
+        <h2>GPA</h2>
+        <div class="progress-count">
+          {% if progress.gpa is not none %}
+          {{ "%.2f"|format(progress.gpa) }}
+          {% else %}
+          N/A
+          {% endif %}
+        </div>
+        <div class="text-muted small">Credit-weighted</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="row g-3 g-xl-4" aria-label="Course details">
+    <div class="col-lg-6">
+      <article class="dashboard-panel">
+        <h2>Courses Completed</h2>
+        <ul class="list-group list-group-flush dashboard-course-list">
+          {% for item in progress.completed_courses %}
+          <li class="list-group-item d-flex justify-content-between align-items-center gap-3 px-4">
+            <span>{{ item.course.code }} — {{ item.course.title }}</span>
+            <span class="badge text-bg-secondary">{{ item.grade or '—' }}</span>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted px-4">No completed courses recorded yet.</li>
+          {% endfor %}
+        </ul>
+      </article>
+    </div>
+    <div class="col-lg-6">
+      <article class="dashboard-panel">
+        <h2>Eligible Next Semester</h2>
+        <ul class="list-group list-group-flush dashboard-course-list">
+          {% for item in progress.eligible_next_semester %}
+          <li class="list-group-item d-flex justify-content-between align-items-center gap-3 px-4">
+            <span>{{ item.course.code }}</span>
+            <span class="badge text-bg-secondary">{{ item.category }}</span>
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted px-4">No eligible courses found.</li>
+          {% endfor %}
+        </ul>
+      </article>
+    </div>
+  </section>
+</main>
 {% endblock %}

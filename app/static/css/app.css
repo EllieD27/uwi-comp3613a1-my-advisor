@@ -1,17 +1,44 @@
 :root {
-  /* Phase 5 theming: Guide overwrites these from docs/report.md preferences */
-  --brand-name: "FastStarter";
-  --brand-bg: #0c1218;
-  --brand-surface: #f7f4ef;
-  --brand-ink: #14202b;
-  --brand-muted: #6a7a88;
-  --brand-accent: #c45c26;
-  --brand-accent-2: #2a6f6b;
-  --brand-sidebar: #14202b;
-  --brand-sidebar-text: #a8b4bf;
+  /* Squilla Fund palette */
+  --brand-name: "MyAdvisor";
+  --squilla-teal: #388087;
+  --squilla-moonstone: #6FB3B8;
+  --squilla-powder: #BADFE7;
+  --squilla-mint: #C2EDCE;
+  --squilla-smoke: #F6F6F2;
+  --squilla-warning-bg: #FCE4E4;
+  --squilla-warning-ink: #8A3030;
+  --bs-primary: var(--squilla-teal);
+  --bs-primary-rgb: 56, 128, 135;
+  --bs-secondary: var(--squilla-moonstone);
+  --bs-secondary-rgb: 111, 179, 184;
+  --bs-success: #4d9a70;
+  --bs-success-rgb: 77, 154, 112;
+  --bs-info: var(--squilla-powder);
+  --bs-info-rgb: 186, 223, 231;
+  --bs-warning: var(--squilla-warning-bg);
+  --bs-warning-rgb: 252, 228, 228;
+  --bs-danger: var(--squilla-warning-ink);
+  --bs-danger-rgb: 138, 48, 48;
+  --bs-light: var(--squilla-smoke);
+  --bs-light-rgb: 246, 246, 242;
+  --bs-dark: #214f54;
+  --bs-dark-rgb: 33, 79, 84;
+  --bs-body-bg: var(--squilla-smoke);
+  --bs-body-color: #214f54;
+  --bs-link-color: var(--squilla-teal);
+  --bs-link-hover-color: #285f65;
+  --brand-bg: var(--squilla-smoke);
+  --brand-surface: #ffffff;
+  --brand-ink: #214f54;
+  --brand-muted: #527276;
+  --brand-accent: var(--squilla-teal);
+  --brand-accent-2: var(--squilla-moonstone);
+  --brand-sidebar: var(--squilla-teal);
+  --brand-sidebar-text: var(--squilla-smoke);
   --brand-font-display: "Fraunces", Georgia, serif;
   --brand-font-body: "Source Sans 3", "Segoe UI", sans-serif;
-  --brand-radius: 0.85rem;
+  --brand-radius: 1rem;
 }
 
 *,
@@ -28,9 +55,98 @@ body {
 }
 
 .brand-wordmark {
-  font-family: var(--brand-font-display);
-  font-weight: 650;
-  letter-spacing: -0.03em;
+  font-family: "Kaushan Script", "Brush Script MT", cursive;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.alert-danger,
+.alert-warning,
+.text-danger,
+.btn-danger,
+.btn-outline-danger,
+.btn-warning,
+.btn-outline-warning,
+.text-bg-warning,
+.course-status.warning,
+.plan-warning {
+  color: var(--squilla-warning-ink) !important;
+}
+
+.alert-danger,
+.alert-warning,
+.btn-danger,
+.btn-outline-danger,
+.btn-warning,
+.btn-outline-warning,
+.text-bg-warning,
+.course-status.warning,
+.plan-warning {
+  background-color: var(--squilla-warning-bg) !important;
+  border-color: color-mix(in srgb, var(--squilla-warning-ink) 20%, transparent) !important;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--squilla-teal);
+  --bs-btn-border-color: var(--squilla-teal);
+  --bs-btn-hover-bg: #2f7076;
+  --bs-btn-hover-border-color: #2f7076;
+  --bs-btn-active-bg: #285f65;
+  --bs-btn-active-border-color: #285f65;
+  --bs-btn-color: var(--squilla-smoke);
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--squilla-teal);
+  --bs-btn-border-color: var(--squilla-moonstone);
+  --bs-btn-hover-bg: var(--squilla-powder);
+  --bs-btn-hover-color: #214f54;
+  --bs-btn-hover-border-color: var(--squilla-teal);
+}
+
+.btn-success,
+.btn-outline-success {
+  --bs-btn-bg: var(--squilla-mint);
+  --bs-btn-border-color: var(--squilla-mint);
+  --bs-btn-color: #214f54;
+  --bs-btn-hover-bg: #a9dfb9;
+  --bs-btn-hover-border-color: #a9dfb9;
+  --bs-btn-hover-color: #214f54;
+}
+
+.btn-info,
+.btn-outline-info {
+  --bs-btn-bg: var(--squilla-powder);
+  --bs-btn-border-color: var(--squilla-moonstone);
+  --bs-btn-color: #214f54;
+  --bs-btn-hover-bg: var(--squilla-moonstone);
+  --bs-btn-hover-border-color: var(--squilla-teal);
+  --bs-btn-hover-color: #214f54;
+}
+
+.btn-danger,
+.btn-outline-danger,
+.btn-warning,
+.btn-outline-warning {
+  --bs-btn-bg: var(--squilla-warning-bg);
+  --bs-btn-border-color: color-mix(in srgb, var(--squilla-warning-ink) 25%, transparent);
+  --bs-btn-color: var(--squilla-warning-ink);
+  --bs-btn-hover-bg: #f7d3d3;
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--squilla-warning-ink) 40%, transparent);
+  --bs-btn-hover-color: #702727;
+}
+
+.table {
+  --bs-table-color: var(--brand-ink);
+  --bs-table-bg: var(--squilla-smoke);
+  --bs-table-border-color: color-mix(in srgb, var(--squilla-teal) 20%, white);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--squilla-moonstone);
+  box-shadow: 0 0 0 0.25rem rgba(111, 179, 184, 0.25);
 }
 
 /* —— Public landing —— */
@@ -40,10 +156,10 @@ body {
   grid-template-rows: auto 1fr auto;
   color: var(--brand-surface);
   background:
-    linear-gradient(160deg, rgba(12, 18, 24, 0.55), rgba(12, 18, 24, 0.82)),
-    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(42, 111, 107, 0.45), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, rgba(196, 92, 38, 0.28), transparent 50%),
-    linear-gradient(180deg, #1a2834 0%, #0c1218 100%);
+    linear-gradient(160deg, rgba(23, 63, 67, 0.78), rgba(56, 128, 135, 0.9)),
+    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(194, 237, 206, 0.35), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, rgba(111, 179, 184, 0.35), transparent 50%),
+    linear-gradient(180deg, #388087 0%, #173f43 100%);
   position: relative;
   overflow: hidden;
 }
@@ -57,8 +173,8 @@ body {
       -18deg,
       transparent,
       transparent 48px,
-      rgba(247, 244, 239, 0.025) 48px,
-      rgba(247, 244, 239, 0.025) 49px
+      rgba(246, 246, 242, 0.05) 48px,
+      rgba(246, 246, 242, 0.05) 49px
     );
   pointer-events: none;
 }
@@ -144,12 +260,12 @@ body {
 
 .btn-landing-primary {
   background: var(--brand-accent);
-  color: #fff8f3;
+  color: var(--squilla-smoke);
 }
 
 .btn-landing-primary:hover {
-  background: color-mix(in srgb, var(--brand-accent) 85%, #000);
-  color: #fff;
+  background: color-mix(in srgb, var(--brand-accent) 85%, #173f43);
+  color: var(--squilla-smoke);
 }
 
 .btn-landing-ghost {
@@ -178,9 +294,9 @@ body {
   right: -6%;
   top: 18%;
   background:
-    radial-gradient(circle at 35% 35%, rgba(247, 244, 239, 0.18), transparent 55%),
-    radial-gradient(circle at 70% 70%, rgba(42, 111, 107, 0.5), transparent 60%),
-    rgba(196, 92, 38, 0.15);
+    radial-gradient(circle at 35% 35%, rgba(246, 246, 242, 0.3), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(194, 237, 206, 0.48), transparent 60%),
+    rgba(111, 179, 184, 0.22);
   filter: blur(2px);
   animation: landing-drift 14s ease-in-out infinite alternate;
   pointer-events: none;
@@ -220,9 +336,9 @@ body {
   justify-content: center;
   padding: 1.5rem;
   background:
-    radial-gradient(ellipse at top left, color-mix(in srgb, var(--brand-accent-2) 35%, transparent), transparent 55%),
-    radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--brand-accent) 28%, transparent), transparent 50%),
-    var(--brand-bg);
+    radial-gradient(ellipse at top left, rgba(186, 223, 231, 0.8), transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(194, 237, 206, 0.65), transparent 50%),
+    linear-gradient(180deg, var(--squilla-smoke) 0%, #eaf3ee 100%);
 }
 
 .auth-panel {
@@ -231,7 +347,8 @@ body {
   color: var(--brand-ink);
   border-radius: var(--brand-radius);
   padding: 2rem 1.75rem;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 18px 50px rgba(23, 63, 67, 0.18);
+  border: 1px solid rgba(56, 128, 135, 0.2);
 }
 
 .auth-panel .brand-wordmark {
@@ -251,8 +368,8 @@ body {
 }
 
 .auth-panel .btn-primary:hover {
-  background: color-mix(in srgb, var(--brand-accent) 85%, #000);
-  border-color: color-mix(in srgb, var(--brand-accent) 85%, #000);
+  background: color-mix(in srgb, var(--brand-accent) 85%, #173f43);
+  border-color: color-mix(in srgb, var(--brand-accent) 85%, #173f43);
 }
 
 .auth-panel .btn-outline-secondary {

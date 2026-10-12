@@ -1,9 +1,448 @@
 {% extends "authenticated-base.html" %}
-{% block title %}Admin{% endblock %}
+{% block title %}Advisor Review Plans{% endblock %}
+
+{% block additional_styles %}
+{{ super() }}
+<style>
+  #sidebar,
+  #content > .navbar {
+    display: none !important;
+  }
+
+  #content {
+    padding: 0 !important;
+    background: var(--squilla-smoke);
+  }
+
+  .advisor-shell {
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 3vw, 2.5rem) 2.5rem;
+  }
+
+  .advisor-header {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 28%, white);
+  }
+
+  .advisor-brand {
+    color: var(--brand-ink);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .advisor-heading {
+    margin: 0;
+    color: var(--brand-ink);
+    font-family: var(--brand-font-display);
+    font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+    font-weight: 650;
+    text-align: center;
+  }
+
+  .advisor-user {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: max-content;
+    color: var(--brand-ink);
+  }
+
+  .advisor-avatar {
+    width: 2.7rem;
+    height: 2.7rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--squilla-powder);
+    font-weight: 700;
+  }
+
+  .advisor-user small {
+    display: block;
+    color: var(--brand-muted);
+  }
+
+  .advisor-content {
+    padding: clamp(1.5rem, 3vw, 2.6rem) 0;
+  }
+
+  .section-heading {
+    margin: 0 0 1rem;
+    color: var(--brand-ink);
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 700;
+  }
+
+  .pending-list {
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .pending-card {
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 30%, white);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--squilla-powder) 35%, var(--squilla-smoke));
+    box-shadow: 0 0.25rem 0.8rem rgba(23, 63, 67, 0.08);
+  }
+
+  .pending-summary {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1.25fr) minmax(10rem, 1fr) minmax(10rem, 1fr) minmax(10rem, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .summary-label {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: var(--brand-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .summary-value {
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+
+  .pending-toggle {
+    border: 1px solid var(--squilla-teal);
+    border-radius: 0.55rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--squilla-teal);
+    color: var(--squilla-smoke);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .pending-toggle:hover {
+    background: #2f7076;
+  }
+
+  .review-details {
+    border-top: 1px solid color-mix(in srgb, var(--squilla-teal) 30%, white);
+    padding: 1.1rem 1.25rem 1.25rem;
+  }
+
+  .student-context {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .student-context h3 {
+    margin: 0 0 0.2rem;
+    color: var(--brand-ink);
+    font-size: 1.25rem;
+  }
+
+  .student-context p,
+  .muted {
+    margin: 0;
+    color: var(--brand-muted);
+  }
+
+  .progress-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0 1.25rem;
+  }
+
+  .progress-tile {
+    min-height: 88px;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 22%, white);
+    border-radius: 0.7rem;
+    background: #fff;
+  }
+
+  .progress-tile strong {
+    display: block;
+    color: var(--brand-ink);
+    font-size: 1.2rem;
+  }
+
+  .progress-tile span {
+    color: var(--brand-muted);
+    font-size: 0.9rem;
+  }
+
+  .review-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .review-panel {
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 22%, white);
+    border-radius: 0.8rem;
+    background: #fff;
+  }
+
+  .review-panel h4 {
+    margin: 0 0 0.7rem;
+    color: var(--brand-ink);
+    font-size: 1.08rem;
+    font-weight: 700;
+  }
+
+  .course-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--brand-ink);
+  }
+
+  .course-table th,
+  .course-table td {
+    padding: 0.45rem 0.35rem;
+    border-bottom: 1px dashed color-mix(in srgb, var(--squilla-teal) 25%, white);
+    text-align: left;
+  }
+
+  .course-table th:last-child,
+  .course-table td:last-child {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .credit-total {
+    margin: 0.75rem 0 0;
+    color: var(--squilla-teal);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .feedback-form label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+
+  .feedback-form textarea {
+    width: 100%;
+    min-height: 7rem;
+    resize: vertical;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 35%, white);
+    border-radius: 0.55rem;
+    padding: 0.7rem;
+    color: var(--brand-ink);
+    background: var(--squilla-smoke);
+  }
+
+  .feedback-form textarea:focus {
+    outline: 3px solid rgba(111, 179, 184, 0.3);
+    border-color: var(--squilla-teal);
+  }
+
+  .decision-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 0.8rem;
+  }
+
+  .decision-btn {
+    border: 1px solid var(--squilla-teal);
+    border-radius: 0.55rem;
+    padding: 0.6rem 1rem;
+    color: var(--squilla-smoke);
+    background: var(--squilla-teal);
+    font-weight: 700;
+  }
+
+  .decision-btn.request-changes {
+    border-color: color-mix(in srgb, var(--squilla-teal) 45%, white);
+    color: var(--brand-ink);
+    background: var(--squilla-powder);
+  }
+
+  .existing-feedback {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    border-left: 4px solid var(--squilla-moonstone);
+    background: color-mix(in srgb, var(--squilla-powder) 25%, white);
+  }
+
+  .empty-state {
+    padding: 2rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 24%, white);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--squilla-powder) 35%, var(--squilla-smoke));
+    color: var(--brand-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .pending-summary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pending-toggle {
+      grid-column: 1 / -1;
+    }
+
+    .review-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .advisor-header {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+
+    .advisor-heading {
+      order: 3;
+      width: 100%;
+    }
+
+    .progress-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .student-context {
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block subpage_content %}
-<div class="container-fluid py-2">
-  <h1 class="h4 mb-2">Admin</h1>
-  <p class="text-muted mb-0">Admin workflow screens replace this shell in Phase 5 implement.</p>
-</div>
+<main class="advisor-shell">
+  <header class="advisor-header">
+    <a class="brand-wordmark advisor-brand" href="{{ url_for('index_view') }}">MyAdvisor</a>
+    <h1 class="advisor-heading">Advisor Review Plans</h1>
+    <div class="advisor-user">
+      <span class="advisor-avatar" aria-hidden="true">{{ user.username[:1]|upper }}</span>
+      <span>{{ user.username }}<small>Advisor</small></span>
+    </div>
+  </header>
+
+  <section class="advisor-content" aria-labelledby="pending-heading">
+    <h2 class="section-heading" id="pending-heading">Pending Plans</h2>
+
+    {% if dashboard_view.advisor and dashboard_view.pending_plans %}
+    <div class="pending-list">
+      {% for item in dashboard_view.pending_plans %}
+      <article class="pending-card">
+        <div class="pending-summary">
+          <div>
+            <span class="summary-label">Student</span>
+            <span class="summary-value">{{ item.student.name }}</span>
+          </div>
+          <div>
+            <span class="summary-label">Program</span>
+            <span class="summary-value">{{ item.program.name if item.program else 'Not assigned' }}</span>
+          </div>
+          <div>
+            <span class="summary-label">Semester</span>
+            <span class="summary-value">{{ item.plan.semester }}</span>
+          </div>
+          <div>
+            <span class="summary-label">Submitted</span>
+            <span class="summary-value">{{ item.plan.submitted_at.strftime('%b %d, %Y') if item.plan.submitted_at else '—' }}</span>
+          </div>
+          <button class="pending-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#review-{{ item.plan.sp_id }}" aria-expanded="false" aria-controls="review-{{ item.plan.sp_id }}">
+            Review plan
+          </button>
+        </div>
+
+        <div class="collapse" id="review-{{ item.plan.sp_id }}">
+          <div class="review-details">
+            <div class="student-context">
+              <div>
+                <h3>{{ item.student.name }} <span class="muted">· {{ item.student.email }}</span></h3>
+                <p>{{ item.program.degree_title if item.program else 'Degree not assigned' }}{% if item.program %} — {{ item.program.name }}{% endif %}</p>
+              </div>
+              <p><strong>Plan status:</strong> {{ item.plan.status }}</p>
+            </div>
+
+            {% if item.progress %}
+            <div class="progress-grid" aria-label="Student degree progress and GPA">
+              <div class="progress-tile">
+                <span>Credits earned</span>
+                <strong>{{ item.progress.earned_credits }} / {{ item.progress.required_credits }}</strong>
+              </div>
+              <div class="progress-tile">
+                <span>Core (incl. Foundation)</span>
+                <strong>{{ item.progress.core_earned_courses }} / {{ item.progress.core_required_courses }} courses</strong>
+              </div>
+              <div class="progress-tile">
+                <span>Electives</span>
+                <strong>{{ item.progress.elective_earned_courses }} / {{ item.progress.elective_required_courses }} courses</strong>
+              </div>
+              <div class="progress-tile">
+                <span>GPA · Credit-weighted</span>
+                <strong>{{ '%.2f'|format(item.progress.gpa) if item.progress.gpa is not none else 'N/A' }}</strong>
+              </div>
+            </div>
+            {% else %}
+            <div class="empty-state">Degree progress is not available for this student.</div>
+            {% endif %}
+
+            <div class="review-grid">
+              <section class="review-panel" aria-label="Plan courses">
+                <h4>Plan Courses</h4>
+                {% if item.courses %}
+                <table class="course-table">
+                  <thead><tr><th>Course</th><th>Credits</th></tr></thead>
+                  <tbody>
+                    {% for course in item.courses %}
+                    <tr><td><strong>{{ course.code }}</strong> — {{ course.title }}</td><td>{{ course.credits }}</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <p class="credit-total">Total: {{ item.plan_credits }} credits</p>
+                {% else %}
+                <p class="muted">No courses are currently listed in this plan.</p>
+                {% endif %}
+              </section>
+
+              <section class="review-panel" aria-label="Advisor feedback">
+                <h4>Feedback and Decision</h4>
+                <form class="feedback-form" method="post" action="{{ url_for('admin_submit_plan_decision', sp_id=item.plan.sp_id) }}">
+                  <label for="comment-{{ item.plan.sp_id }}">Feedback for student</label>
+                  <textarea id="comment-{{ item.plan.sp_id }}" name="comment" placeholder="Add feedback or instructions for the student…" required></textarea>
+                  <div class="decision-actions">
+                    <button class="decision-btn request-changes" type="submit" name="decision" value="Request changes">Request Changes</button>
+                    <button class="decision-btn" type="submit" name="decision" value="Approve">Approve</button>
+                  </div>
+                </form>
+                {% if item.feedback %}
+                <div class="existing-feedback">
+                  <strong>Previous feedback: {{ item.feedback.decision }}</strong>
+                  {% if item.feedback.comment %}<p class="mb-0 mt-1">{{ item.feedback.comment }}</p>{% endif %}
+                </div>
+                {% endif %}
+              </section>
+            </div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% elif not dashboard_view.advisor %}
+    <div class="empty-state">This admin account is not linked to an Advisor record, so no assigned student plans can be displayed.</div>
+    {% else %}
+    <div class="empty-state">There are no submitted plans awaiting review.</div>
+    {% endif %}
+  </section>
+</main>
 {% endblock %}

@@ -1,0 +1,29 @@
+{
+  "system": "MyAdvisor",
+  "actors": [
+    {"name": "Student", "side": "left"},
+    {"name": "Advisor", "side": "right"}
+  ],
+  "use_cases": [
+    {
+      "name": "View Degree Progress",
+      "actors": ["Student"]
+    },
+    {
+      "name": "Build and Submit Semester Plan",
+      "actors": ["Student"]
+    },
+    {
+      "name": "View Plan Status and Feedback",
+      "actors": ["Student"]
+    },
+    {
+      "name": "Review and Submit Feedback",
+      "actors": ["Advisor"],
+      "includes": ["View Pending Plans", "View Selected Student Degree Progress", "Submit Feedback and Decision"]
+    },
+    {"name": "View Pending Plans"},
+    {"name": "View Selected Student Degree Progress"},
+    {"name": "Submit Feedback and Decision"}
+  ]
+}

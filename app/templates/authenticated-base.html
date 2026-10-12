@@ -4,7 +4,7 @@
 <style>
     body {
         overflow-x: hidden;
-        background: #f4f6f8;
+        background: var(--brand-bg);
     }
 
     #wrapper {
@@ -18,7 +18,7 @@
         min-height: 100vh;
         transition: all 0.3s;
         background: var(--brand-sidebar);
-        color: #fff;
+        color: var(--brand-sidebar-text);
     }
 
     #sidebar.collapsed {
@@ -32,13 +32,13 @@
 
     #sidebar .nav-link:hover,
     #sidebar .nav-link.active {
-        color: #fff;
-        background-color: color-mix(in srgb, var(--brand-accent) 55%, #000);
+        color: var(--brand-sidebar-text);
+        background-color: color-mix(in srgb, var(--brand-accent) 65%, #173f43);
         border-radius: 0.5rem;
     }
 
     #sidebar .brand-wordmark {
-        color: #fff;
+        color: var(--brand-sidebar-text);
         font-size: 1.25rem;
         text-align: center;
         margin: 1rem 0 1.5rem;
@@ -50,11 +50,11 @@
         transition: all 0.3s;
         display: flex;
         flex-direction: column;
-        background-color: #f4f6f8;
+        background-color: var(--brand-bg);
     }
 
     .navbar {
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 20%, white);
     }
 </style>
 {% block additional_styles %}{% endblock %}
@@ -63,7 +63,7 @@
 {% block content %}
 <div id="wrapper">
     <nav id="sidebar" class="p-3 d-flex flex-column vh-100">
-        <div class="brand-wordmark">FastStarter</div>
+        <div class="brand-wordmark">MyAdvisor</div>
 
         <ul class="nav nav-pills flex-column gap-2 flex-grow-1">
             <li class="nav-item">

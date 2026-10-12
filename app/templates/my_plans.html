@@ -1,0 +1,334 @@
+{% extends "authenticated-base.html" %}
+{% block title %}My Plans{% endblock %}
+
+{% block additional_styles %}
+{{ super() }}
+<style>
+  #sidebar,
+  #content > .navbar {
+    display: none !important;
+  }
+
+  #content {
+    padding: 0 !important;
+    background: var(--squilla-smoke);
+  }
+
+  .plans-shell {
+    width: min(1400px, 100%);
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 2vw, 2.2rem) 2rem;
+  }
+
+  .plans-header {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 35%, white);
+  }
+
+  .plans-brand {
+    color: var(--brand-ink);
+    font-size: clamp(2.2rem, 3vw, 3.2rem);
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  .plans-nav {
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    gap: clamp(1.2rem, 3.5vw, 3.5rem);
+  }
+
+  .plans-tab {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    color: var(--brand-ink);
+    font-size: clamp(1rem, 1.5vw, 1.45rem);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .plans-tab.active {
+    color: var(--squilla-teal);
+    font-weight: 700;
+    box-shadow: inset 0 -3px var(--squilla-teal);
+  }
+
+  .plans-user {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: max-content;
+    color: var(--brand-ink);
+  }
+
+  .plans-avatar {
+    width: 2.7rem;
+    height: 2.7rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--squilla-powder);
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+
+  .plans-user small {
+    display: block;
+    color: var(--brand-muted);
+    font-size: 0.9rem;
+  }
+
+  .plans-content {
+    padding: clamp(1.6rem, 3vw, 2.7rem) 0;
+  }
+
+  .plans-title {
+    margin: 0 0 0.5rem;
+    color: var(--brand-ink);
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 700;
+  }
+
+  .plans-subtitle {
+    margin: 0 0 1.5rem;
+    color: var(--brand-muted);
+    font-size: 1.05rem;
+  }
+
+  .plans-table-wrap {
+    overflow-x: auto;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 35%, white);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--squilla-powder) 35%, var(--squilla-smoke));
+    box-shadow: 0 0.25rem 0.8rem rgba(23, 63, 67, 0.1);
+  }
+
+  .plans-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--brand-ink);
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  }
+
+  .plans-table th,
+  .plans-table td {
+    padding: 1rem 1.15rem;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .plans-table thead th {
+    color: var(--brand-ink);
+    font-weight: 700;
+    white-space: nowrap;
+    border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 45%, white);
+  }
+
+  .plans-table tbody tr.plan-row > td {
+    border-bottom: 1px dashed color-mix(in srgb, var(--squilla-teal) 32%, white);
+  }
+
+  .plans-table tbody tr.plan-row:last-of-type > td {
+    border-bottom: 0;
+  }
+
+  .plan-semester {
+    color: var(--brand-ink);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .plan-date {
+    white-space: nowrap;
+  }
+
+  .plan-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--squilla-teal) 40%, white);
+    border-radius: 999px;
+    color: var(--brand-ink);
+    background: color-mix(in srgb, var(--squilla-mint) 54%, white);
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .plan-details-cell {
+    padding: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--squilla-teal) 32%, white);
+  }
+
+  .plan-details {
+    min-width: 9rem;
+    padding: 0.1rem 0;
+  }
+
+  .plan-details summary {
+    width: fit-content;
+    color: var(--squilla-teal);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .plan-details-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 1fr);
+    gap: 1.5rem;
+    padding: 1rem 0 0.3rem;
+  }
+
+  .plan-details h2 {
+    margin: 0 0 0.6rem;
+    color: var(--brand-ink);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .plan-course-list,
+  .plan-feedback-list {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  .plan-course-list li,
+  .plan-feedback-list li {
+    padding: 0.2rem 0;
+  }
+
+  .plan-credit-total {
+    margin-top: 0.65rem;
+    color: var(--squilla-teal);
+    font-weight: 700;
+  }
+
+  .plan-feedback-list p {
+    margin: 0.2rem 0 0.55rem;
+    color: var(--brand-muted);
+  }
+
+  .plan-empty {
+    margin: 0;
+    padding: 2rem 1.2rem;
+    color: var(--brand-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .plans-header {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem 0;
+    }
+
+    .plans-nav {
+      order: 3;
+      justify-content: center;
+      width: 100%;
+      min-height: 2.75rem;
+      gap: clamp(1rem, 4vw, 2rem);
+    }
+
+    .plan-details-body {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block subpage_content %}
+<main class="plans-shell">
+  <header class="plans-header">
+    <a class="brand-wordmark plans-brand" href="{{ url_for('index_view') }}">MyAdvisor</a>
+    <nav class="plans-nav" aria-label="Student navigation">
+      <a class="plans-tab" href="{{ url_for('user_home_view') }}">Dashboard</a>
+      <a class="plans-tab" href="{{ url_for('student_build_plan_view') }}">Build Plan</a>
+      <a class="plans-tab active" href="{{ url_for('student_my_plans_view') }}" aria-current="page">My Plans</a>
+    </nav>
+    <div class="plans-user">
+      <span class="plans-avatar" aria-hidden="true">{{ user.username[:1]|upper }}</span>
+      <span>{{ user.username }}<small>Student</small></span>
+    </div>
+  </header>
+
+  <section class="plans-content" aria-labelledby="plans-title">
+    <h1 class="plans-title" id="plans-title">My Plans</h1>
+    <p class="plans-subtitle">View your semester plans, their status, and advisor feedback.</p>
+
+    <div class="plans-table-wrap">
+      {% if my_plans.plans %}
+      <table class="plans-table">
+        <thead>
+          <tr>
+            <th scope="col">Semester</th>
+            <th scope="col">Created</th>
+            <th scope="col">Submitted</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Plan details</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in my_plans.plans %}
+          <tr class="plan-row">
+            <td class="plan-semester">{{ item.plan.semester }}</td>
+            <td class="plan-date">{{ item.plan.created_at.strftime('%b %d, %Y') if item.plan.created_at else '—' }}</td>
+            <td class="plan-date">{{ item.plan.submitted_at.strftime('%b %d, %Y') if item.plan.submitted_at else '—' }}</td>
+            <td>
+              <span class="plan-status{% if item.plan.status in ['Request Changes', 'Request changes', 'Rejected'] %} plan-warning{% endif %}">
+                {{ item.plan.status }}
+              </span>
+            </td>
+            <td>
+              <details class="plan-details">
+                <summary>View details</summary>
+                <div class="plan-details-body">
+                  <section aria-label="Courses in {{ item.plan.semester }} plan">
+                    <h2>Courses</h2>
+                    {% if item.courses %}
+                    <ul class="plan-course-list">
+                      {% for course in item.courses %}
+                      <li><strong>{{ course.code }}</strong> — {{ course.title }} ({{ course.credits }} credits)</li>
+                      {% endfor %}
+                    </ul>
+                    <p class="plan-credit-total">Total: {{ item.total_credits }} credits</p>
+                    {% else %}
+                    <p>No courses are listed in this plan.</p>
+                    {% endif %}
+                  </section>
+                  <section aria-label="Advisor feedback for {{ item.plan.semester }}">
+                    <h2>Advisor Feedback</h2>
+                    {% if item.feedback %}
+                    <ul class="plan-feedback-list">
+                      {% for feedback in item.feedback %}
+                      <li>
+                        <strong>{{ feedback.decision }}</strong>
+                        {% if feedback.created_at %}<span class="text-muted"> · {{ feedback.created_at.strftime('%b %d, %Y') }}</span>{% endif %}
+                        {% if feedback.comment %}<p>{{ feedback.comment }}</p>{% endif %}
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No advisor feedback yet.</p>
+                    {% endif %}
+                  </section>
+                </div>
+              </details>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="plan-empty">You do not have any semester plans yet. Use Build Plan to create one.</p>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,35 @@
+@startuml
+!pragma layout smetana
+skinparam shadowing false
+skinparam actorBorderColor #1B365D
+skinparam actorFontColor #1E232D
+skinparam usecaseBackgroundColor #FFFFFF
+skinparam usecaseBorderColor #1B365D
+skinparam usecaseFontColor #1E232D
+skinparam rectangleBorderColor #1B365D
+skinparam rectangleBackgroundColor #F8FAFC
+skinparam arrowColor #1B365D
+
+actor "Student" as Student
+
+rectangle "MyAdvisor" {
+  usecase "View Degree Progress" as View_Degree_Progress
+  usecase "Build and Submit Semester Plan" as Build_and_Submit_Semester_Plan
+  usecase "View Plan Status and Feedback" as View_Plan_Status_and_Feedback
+  usecase "Review and Submit Feedback" as Review_and_Submit_Feedback
+  usecase "View Pending Plans" as View_Pending_Plans
+  usecase "View Selected Student Degree Progress" as View_Selected_Student_Degree_Progress
+  usecase "Submit Feedback and Decision" as Submit_Feedback_and_Decision
+}
+
+actor "Advisor" as Advisor
+
+Student --> View_Degree_Progress
+Student --> Build_and_Submit_Semester_Plan
+Student --> View_Plan_Status_and_Feedback
+Review_and_Submit_Feedback <-- Advisor
+Review_and_Submit_Feedback ..> View_Pending_Plans : <<include>>
+Review_and_Submit_Feedback ..> View_Selected_Student_Degree_Progress : <<include>>
+Review_and_Submit_Feedback ..> Submit_Feedback_and_Decision : <<include>>
+
+@enduml
