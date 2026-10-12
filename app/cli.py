@@ -202,17 +202,28 @@ def cmd_seed(args: argparse.Namespace) -> None:
         },
         {
             "name": "Celeste Weston", "username": "celeste", "email": "celeste@example.com",
-            "completed": [("COMP 1601", "B+"), ("COMP 1602", "C"), ("ACCT 1003", "A")],
+            "completed": [
+                ("COMP 1601", "B+"), ("COMP 1602", "C"), ("COMP 1603", "B"),
+                ("ACCT 1002", "A-"), ("ACCT 1003", "A"),
+            ],
             "plan": ["COMP 1603", "ACCT 1002", "ECON 1001", "ECON 1002", "FOUN 1101"],
         },
         {
             "name": "Kate Baxter", "username": "kate", "email": "kate@example.com",
-            "completed": [("COMP 1600", "A-"), ("COMP 1601", "C")],
-            "plan": ["COMP 1602", "COMP 1603", "ACCT 1003", "FOUN 1105", "FOUN 1301"],
+            "completed": [
+                ("COMP 1601", "C"), ("COMP 1602", "B"), ("COMP 1603", "B+"),
+                ("ACCT 1002", "A-"), ("ACCT 1003", "A"), ("ECON 1001", "B+"),
+                ("ECON 1002", "B"), ("FOUN 1101", "A-"), ("FOUN 1105", "B+"),
+                ("FOUN 1301", "B"),
+            ],
+            "plan": ["COMP 2601", "COMP 2602", "COMP 2605", "COMP 2606", "COMP 2611"],
         },
         {
             "name": "Nelly miller", "username": "nelly", "email": "nelly@example.com",
-            "completed": [("COMP 1601", "B"), ("COMP 1602", "C")],
+            "completed": [
+                ("ECON 1001", "B+"), ("ECON 1002", "B"), ("FOUN 1101", "A-"),
+                ("FOUN 1105", "B+"), ("FOUN 1301", "B"),
+            ],
             "plan": ["COMP 2601", "COMP 2602", "COMP 2605", "COMP 2606", "COMP 2611"],
             "plan_status": "Submitted",
         },

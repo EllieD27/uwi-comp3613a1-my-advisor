@@ -86,7 +86,7 @@ def test_build_plan_service_marks_prerequisite_gap_and_selected_courses():
 
 
 def test_build_plan_catalog_is_bob_completed_and_planned_courses_in_code_order():
-    assert len(SemesterPlanService.AVAILABLE_CODES) == 26
+    assert len(SemesterPlanService.AVAILABLE_CODES) == 27
     assert SemesterPlanService.AVAILABLE_CODES == tuple(sorted(SemesterPlanService.AVAILABLE_CODES))
 
 

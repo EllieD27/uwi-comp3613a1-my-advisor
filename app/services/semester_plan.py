@@ -17,7 +17,7 @@ class SemesterPlanService:
         "ECON 1001", "ECON 1002",
         "FOUN 1101", "FOUN 1105", "FOUN 1301",
         "INFO 3609",
-        "MGMT 2008", "MGMT 2021", "MGMT 2032",
+        "MGMT 2008", "MGMT 2012", "MGMT 2021", "MGMT 2032",
         "MKTG 2001",
     )))
     MAX_CREDITS = 15

@@ -6,6 +6,31 @@ from app.repositories.academic import AcademicRepository
 
 
 class DegreeProgressService:
+    YEAR_ONE_CODES = (
+        "ACCT 1002",
+        "ACCT 1003",
+        "COMP 1601",
+        "COMP 1602",
+        "COMP 1603",
+        "ECON 1001",
+        "ECON 1002",
+        "FOUN 1101",
+        "FOUN 1105",
+        "FOUN 1301",
+    )
+    YEAR_TWO_CODES = (
+        "COMP 2601",
+        "COMP 2602",
+        "COMP 2603",
+        "COMP 2604",
+        "COMP 2605",
+        "COMP 2606",
+        "COMP 2611",
+        "MGMT 2008",
+        "MGMT 2021",
+        "MGMT 2032",
+        "MKTG 2001",
+    )
     ELIGIBLE_NEXT_SEMESTER_CODES = (
         "COMP 3603",
         "COMP 3606",
@@ -145,19 +170,45 @@ class DegreeProgressService:
 
         plans = self.academic_repo.get_student_plans(student.student_id)
         passed_course_ids = self.academic_repo.get_passed_course_ids(student.student_id)
+        completed_year_one_codes = {
+            item["course"].code
+            for item in completed_courses
+            if item["course"].code in self.YEAR_ONE_CODES
+        }
+        candidate_codes = (
+            tuple(code for code in self.YEAR_ONE_CODES if code not in completed_year_one_codes)
+            if len(completed_year_one_codes) < len(self.YEAR_ONE_CODES)
+            else self.YEAR_TWO_CODES
+        )
+        if len(completed_year_one_codes) == len(self.YEAR_ONE_CODES):
+            candidate_codes = tuple(dict.fromkeys(
+                (*candidate_codes, *self.ELIGIBLE_NEXT_SEMESTER_CODES)
+            ))
         eligible_candidates = self.academic_repo.get_courses_by_codes(
-            list(self.ELIGIBLE_NEXT_SEMESTER_CODES)
+            list(candidate_codes)
         )
         candidates_by_code = {course.code: course for course in eligible_candidates}
         eligible_next_semester = []
-        for course_code in self.ELIGIBLE_NEXT_SEMESTER_CODES:
+        for course_code in candidate_codes:
             course = candidates_by_code.get(course_code)
             if course is None:
                 continue
-            prerequisites = self.academic_repo.get_course_prerequisites(course.course_id)
-            if any(item.prereq_id not in passed_course_ids for item in prerequisites):
+            if course.course_id in completed_course_ids:
                 continue
-            eligible_next_semester.append({"course": course, "category": "Elective"})
+            prerequisites = self.academic_repo.get_course_prerequisites(course.course_id)
+            if (
+                course_code not in self.YEAR_TWO_CODES
+                and any(item.prereq_id not in passed_course_ids for item in prerequisites)
+            ):
+                continue
+            eligible_next_semester.append({
+                "course": course,
+                "category": (
+                    "Core"
+                    if course_code in self.YEAR_ONE_CODES or course_code in self.YEAR_TWO_CODES
+                    else "Elective"
+                ),
+            })
 
         return {
             "student": student,
