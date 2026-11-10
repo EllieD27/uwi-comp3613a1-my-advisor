@@ -91,3 +91,23 @@ def test_dashboard_credit_and_course_count_cards_reconcile_to_93_credits():
     assert result["core_required_courses"] == 23
     assert result["elective_earned_courses"] == 0
     assert result["elective_required_courses"] == 8
+
+class GpaRepository(DegreeProgressRepository):
+    def __init__(self):
+        super().__init__()
+        ids = self.course_ids
+        self.student_courses = [
+            SimpleNamespace(course_id=ids["COMP 1600"], grade="A", status="Completed", sem_completed="2024/2025"),
+            SimpleNamespace(course_id=ids["COMP 1601"], grade="B", status="Completed", sem_completed="2024/2025"),
+            SimpleNamespace(course_id=ids["COMP 1602"], grade=None, status="In progress", sem_completed=""),
+        ]
+
+    def get_grade_scale(self, grade):
+        points = {"A": 4.0, "B": 3.0}.get(grade)
+        return SimpleNamespace(grade=grade, points=points) if points is not None else None
+
+
+def test_gpa_is_credit_weighted_and_ignores_ungraded_courses():
+    result = DegreeProgressService(GpaRepository()).get_student_progress(10)
+
+    assert result["gpa"] == 3.5

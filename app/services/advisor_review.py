@@ -60,6 +60,8 @@ class AdvisorReviewService:
     ) -> bool:
         if decision not in {"Approve", "Request changes"}:
             return False
+        if decision == "Request changes" and not comment.strip():
+            return False
 
         advisor = self.academic_repo.get_advisor_by_user_id(user_id)
         if advisor is None:

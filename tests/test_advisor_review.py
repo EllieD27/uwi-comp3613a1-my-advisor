@@ -113,3 +113,11 @@ def test_submit_plan_decision_rejects_unassigned_or_invalid_decisions():
     assert service.submit_plan_decision(999, 22, "Approve", "Looks good") is False
     assert repo.saved_feedback == []
     assert repo.saved_plans == []
+
+def test_request_changes_requires_a_comment():
+    repo = AdvisorRepositoryStub()
+    service = AdvisorReviewService(repo)
+
+    assert service.submit_plan_decision(2, 22, "Request changes", "") is False
+    assert repo.saved_feedback == []
+    assert repo.plan.status == "Submitted"

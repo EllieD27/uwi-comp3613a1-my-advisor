@@ -100,7 +100,7 @@ class Settings(BaseSettings):
     env: str
     config_password: str = ""
     jwt_algorithm: str = "HS256"
-    jwt_access_token_expires: int = 30
+    jwt_access_token_expires: int = 300
     app_host: str = "0.0.0.0"
     app_port: int = 5000
     db_pool_size: int = 10

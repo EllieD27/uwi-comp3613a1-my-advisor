@@ -1,5 +1,6 @@
 from pwdlib import PasswordHash
 from datetime import timedelta, datetime, timezone
+from urllib.parse import urlsplit
 import jwt
 from app.config import get_settings
 
@@ -37,3 +38,13 @@ def access_token_cookie_kwargs() -> dict:
         "samesite": "none" if is_prod else "lax",
         "secure": is_prod,
     }
+
+
+def safe_local_redirect(target: str | None, default: str) -> str:
+    """Return a same-site path, rejecting absolute or protocol-relative URLs."""
+    if not target:
+        return default
+    parsed = urlsplit(target)
+    if parsed.scheme or parsed.netloc or not target.startswith("/") or target.startswith("//"):
+        return default
+    return target
