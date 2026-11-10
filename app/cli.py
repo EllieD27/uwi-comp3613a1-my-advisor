@@ -246,8 +246,15 @@ def cmd_seed(args: argparse.Namespace) -> None:
             print(f"  remove {removed} retired demo student account(s) and related records")
 
         for username, email, password, role in demo_users:
-            if repo.get_by_username(username):
-                print(f"  skip  {username} (already exists)")
+            existing_user = repo.get_by_username(username)
+            if existing_user:
+                if existing_user.role != role:
+                    existing_user.role = role
+                    session.add(existing_user)
+                    session.commit()
+                    print(f"  update {username} role to {role}")
+                else:
+                    print(f"  skip  {username} (already exists)")
                 skipped += 1
                 continue
             payload_cls = AdminCreate if role == "admin" else RegularUserCreate

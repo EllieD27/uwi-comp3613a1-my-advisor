@@ -15,7 +15,7 @@ async def login_view(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="login.html",
-        context={"next": safe_local_redirect(request.query_params.get("next"), "/app")},
+        context={"next": safe_local_redirect(request.query_params.get("next"), "")},
     )
 
 
@@ -25,7 +25,7 @@ async def login_action_ajax(
     request: Request,
     username: str = Form(),
     password: str = Form(),
-    next: str = Form(default="/app"),
+    next: str = Form(default=""),
 ):
     user_repo = UserRepository(db)
     auth_service = AuthService(user_repo)
@@ -41,7 +41,7 @@ async def login_action_ajax(
     dest = "admin_home_view" if user and user.role == "admin" else "user_home_view"
     default_destination = str(request.url_for(dest))
     response = RedirectResponse(
-        url=safe_local_redirect(next, default_destination),
+        url=safe_local_redirect(next, default_destination) if next else default_destination,
         status_code=status.HTTP_303_SEE_OTHER,
     )
     response.set_cookie(
