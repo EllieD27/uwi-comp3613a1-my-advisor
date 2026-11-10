@@ -9,6 +9,7 @@
     <p class="auth-tagline">Sign in to your advising portal</p>
 
     <form method="POST" action="{{ url_for('login_action_ajax') }}">
+      <input type="hidden" name="next" value="{{ next }}">
       <div class="mb-3">
         <label class="form-label" for="username">Username</label>
         <input class="form-control" type="text" id="username" name="username" required autofocus>

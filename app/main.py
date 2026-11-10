@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from urllib.parse import urlencode
 
 import uvicorn
 from fastapi import FastAPI, Request, status
@@ -61,9 +62,18 @@ async def health():
 
 @app.exception_handler(status.HTTP_401_UNAUTHORIZED)
 async def unauthorized_redirect_handler(request: Request, exc: Exception):
-    return templates.TemplateResponse(
-        request=request,
-        name="401.html",
+    if request.url.path == "/admin" or request.url.path.startswith("/admin/"):
+        return templates.TemplateResponse(
+            request=request,
+            name="401.html",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+    next_path = str(request.url.path)
+    if request.url.query:
+        next_path += f"?{request.url.query}"
+    return RedirectResponse(
+        url=f"{request.url_for('login_view')}?{urlencode({'next': next_path})}",
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
 

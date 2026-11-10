@@ -1,0 +1,91 @@
+erDiagram
+  Student ||--o{ SemesterPlan : submits
+  Advisor ||--o{ Student : advises
+  Program ||--o{ Student : followed_by
+  Program ||--o{ ProgramRequirement : requires
+  Course ||--o{ ProgramRequirement : satisfies
+  SemesterPlan ||--o{ SemesterPlanCourse : contains
+  Course ||--o{ SemesterPlanCourse : listed_in
+  Student ||--o{ StudentCourse : has_record
+  Course ||--o{ StudentCourse : recorded_for
+  GradeScale ||--o{ StudentCourse : grades
+  Course ||--o{ CoursePrerequisite : requires
+  Course ||--o{ CoursePrerequisite : prerequisite_for
+  Advisor ||--o{ Feedback : writes
+  SemesterPlan ||--o{ Feedback : reviewed_as
+
+  Student {
+    int student_id PK
+    int program_id FK
+    int advisor_id FK
+    string name
+    string email
+    string status
+  }
+  Advisor {
+    int advisor_id PK
+    string name
+    string email
+  }
+  Program {
+    int program_id PK
+    string name
+    string degree_title
+    int required_credits
+    int max_credits
+  }
+  Course {
+    int course_id PK
+    string code
+    string title
+    int credits
+    string faculty
+    string department
+  }
+  ProgramRequirement {
+    int pr_id PK
+    int program_id FK
+    int course_id FK
+    string category
+    bool required
+    string note
+  }
+  SemesterPlan {
+    int sp_id PK
+    int student_id FK
+    string semester
+    date created_at
+    date submitted_at
+    string status
+    string notes
+  }
+  SemesterPlanCourse {
+    int spc_id PK
+    int sp_id FK
+    int course_id FK
+  }
+  Feedback {
+    int feedback_id PK
+    int sp_id FK
+    int advisor_id FK
+    date created_at
+    string comment
+    string decision
+  }
+  StudentCourse {
+    int sc_id PK
+    int student_id FK
+    int course_id FK
+    string grade FK
+    string sem_completed
+    string status
+  }
+  GradeScale {
+    string grade PK
+    float points
+  }
+  CoursePrerequisite {
+    int cp_id PK
+    int course_id FK
+    int prereq_id FK
+  }
