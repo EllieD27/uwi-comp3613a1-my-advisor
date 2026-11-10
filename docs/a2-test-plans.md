@@ -49,12 +49,30 @@ without duplicating or replacing the existing test implementation.
 All integration tests use the isolated in-memory SQLite fixture in
 `tests/conftest.py`; they do not modify the development database.
 
-## User Acceptance Test Plan
+## User Acceptance Test Report
 
-| Test Case | Pre-conditions | Test Steps | Test Criteria | Success |
+**Tester Name:** Eliana Dookhoo  
+**Tester Position:** Software Engineering 2 Student  
+**Date of Test (DD/MM/YYYY):** 10 / 11 / 2026
+
+| Test Case | Pre-conditions | Test Steps | Test Criteria | Success (indicate with a check) |
 |---|---|---|---|---|
-| View Degree Progress | The student is registered, seeded, and logged in as a student | Open the student dashboard and review the degree-progress cards | The page shows earned credits, required credits, course counts, and GPA | The student can confirm their current academic progress from the dashboard |
-| Build and Submit Semester Plan | The student is logged in and the course catalogue is available | Open Build Plan, select valid courses, add them to the plan, and submit the plan | The selected courses and total credits are shown, and the plan status becomes `Submitted` | The student can see the submitted plan in My Plans |
-| Review and Approve Semester Plan | An advisor/admin is logged in and a student plan is submitted for review | Open the admin dashboard, review the plan, enter feedback, and select Approve | The plan is removed from the pending queue and its decision is displayed as approved | The student plan has an approved status and saved advisor feedback |
-| Request Changes to a Semester Plan | An advisor/admin is logged in and a student plan is submitted for review | Open the plan, enter a non-empty feedback comment, and select Request Changes | The plan status changes to `Request Changes` and the feedback is visible to the student | The student can see the advisor’s requested changes |
-| Prevent Invalid Plan Actions | A student is logged in with a course that has an unmet prerequisite | Attempt to add the course to the semester plan | The course is not added and the plan remains unchanged | The student receives the course eligibility/status information and cannot submit the invalid course |
+| View Degree Progress | The student account exists and the tester is logged in as a student. | 1. Open the student dashboard.<br>2. Review the degree-progress cards. | The dashboard shows earned credits, required credits, core/elective course counts, and GPA. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
+| Build and Submit Semester Plan | The tester is logged in as a student and the course catalogue is available. | 1. Open **Build Plan**.<br>2. Select a valid course.<br>3. Add the course to the plan.<br>4. Submit the plan. | The selected course and total credits are displayed, the submission completes, and the plan status becomes `Submitted`. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
+| Review and Approve Semester Plan | A student plan is submitted and the tester is logged in as the assigned advisor/admin. | 1. Open the advisor dashboard.<br>2. Review the submitted plan.<br>3. Enter feedback.<br>4. Select **Approve**. | The plan is removed from the pending queue, the plan status becomes `Approved`, and the feedback is saved. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
+| Request Changes to a Semester Plan | A student plan is submitted and the tester is logged in as the assigned advisor/admin. | 1. Open the submitted plan.<br>2. Enter a non-empty feedback comment.<br>3. Select **Request Changes**. | The plan status becomes `Request Changes` and the feedback is available for the student to review. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
+| Prevent Invalid Plan Actions | The tester is logged in as a student and selects a course whose prerequisite has not been passed. | 1. Open **Build Plan**.<br>2. Attempt to add the course with the unmet prerequisite. | The course is not added, the plan remains unchanged, and the course status explains that a prerequisite is required. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
+
+### General Comments
+
+______________________________________________________________________________
+
+______________________________________________________________________________
+
+______________________________________________________________________________
+
+**Acceptance Decision:** ☑ Accepted &nbsp;&nbsp; ☐ Rejected  
+
+**Signature:**  
+
+![Eliana Dookhoo signature](assets/eliana-dookhoo-signature.png)
