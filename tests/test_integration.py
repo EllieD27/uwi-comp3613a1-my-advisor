@@ -4,10 +4,10 @@ from app.models.academic import Feedback, SemesterPlan
 from app.models.academic import SemesterPlanCourse, Student
 
 
-def login(client, username, password):
+def login(client, username, password, next_path=""):
     return client.post(
         "/login",
-        data={"username": username, "password": password, "next": "/app"},
+        data={"username": username, "password": password, "next": next_path},
         follow_redirects=False,
     )
 
@@ -51,6 +51,7 @@ def test_admin_can_view_admin_dashboard(client):
     login_response = login(client, "admin", "adminpass")
 
     assert login_response.status_code == 303
+    assert urlparse(login_response.headers["location"]).path == "/admin"
 
     response = client.get("/admin")
 
