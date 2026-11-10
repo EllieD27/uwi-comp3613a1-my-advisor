@@ -184,7 +184,8 @@
             },
             "description": "Redirect following is disabled so the authentication redirect can be tested.",
             "protocolProfileBehavior": {
-              "disableFollowRedirects": true
+              "disableFollowRedirects": true,
+              "disableCookieJar": true
             }
           },
           "event": [
@@ -193,9 +194,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
+                  "pm.request.headers.remove(\"Cookie\");",
+                  "pm.request.headers.remove(\"Authorization\");",
+                  "pm.request.headers.upsert({ key: \"Cookie\", value: \"access_token=invalid-postman-token\" });"
                 ]
               }
             },
@@ -209,7 +210,8 @@
                   "});",
                   "",
                   "pm.test(\"Redirect points to login\", function () {",
-                  "    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/login\");",
+                  "    const location = pm.response.headers.get(\"Location\") || \"\";",
+                  "    pm.expect(location, \"Expected a login redirect\").to.include(\"/login\");",
                   "});"
                 ]
               }
@@ -237,7 +239,8 @@
             },
             "description": "The request is expected to return the application's unauthorized response when no session cookie exists.",
             "protocolProfileBehavior": {
-              "disableFollowRedirects": true
+              "disableFollowRedirects": true,
+              "disableCookieJar": true
             }
           },
           "event": [
@@ -246,9 +249,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
+                  "pm.request.headers.remove(\"Cookie\");",
+                  "pm.request.headers.remove(\"Authorization\");",
+                  "pm.request.headers.upsert({ key: \"Cookie\", value: \"access_token=invalid-postman-token\" });"
                 ]
               }
             },
