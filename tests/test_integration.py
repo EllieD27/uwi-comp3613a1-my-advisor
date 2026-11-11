@@ -4,6 +4,12 @@ from app.models.academic import Feedback, SemesterPlan
 from app.models.academic import SemesterPlanCourse, Student
 
 
+def test_health(client):
+    response = client.get("/health")
+
+    assert response.status_code == 200
+
+
 def login(client, username, password, next_path=""):
     return client.post(
         "/login",
@@ -60,6 +66,11 @@ def test_admin_can_view_admin_dashboard(client):
 
 
 def test_users_api_returns_user_response_shape(client):
+    response = client.get("/api/users", follow_redirects=False)
+    assert response.status_code == 303
+    assert "/login" in response.headers["location"]
+
+    login(client, "admin", "adminpass")
     response = client.get("/api/users")
 
     assert response.status_code == 200
