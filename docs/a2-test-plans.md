@@ -30,21 +30,27 @@ without duplicating or replacing the existing test implementation.
 
 ## Integration Test Plan
 
-| Test Dependencies | Description |
-|---|---|
-| `test_health` | Calls `GET /health` and verifies the application health endpoint returns HTTP 200 |
-| `test_public_landing_page_is_available` | With the isolated test database and no login, verifies that the public landing page returns HTTP 200 and displays MyAdvisor |
-| `test_student_dashboard_requires_login` | With no authentication cookie, verifies that the student dashboard redirects to the login page |
-| `test_authenticated_student_can_view_dashboard` | Logs in as the seeded student and verifies that the student dashboard returns HTTP 200 with degree-progress content |
-| `test_regular_user_cannot_view_admin_dashboard` | Logs in as a regular student and verifies that access to the admin dashboard returns HTTP 401 |
-| `test_admin_can_view_admin_dashboard` | Logs in as the seeded admin and verifies that the admin dashboard returns HTTP 200 |
-| `test_users_api_returns_user_response_shape` | Calls `GET /api/users` and verifies the HTTP 200 response, usernames, and `id`/`username`/`email` response fields |
-| `test_student_can_add_and_submit_a_semester_plan` | Logs in as a student, adds `COMP 3603`, submits the plan, and verifies the database status is `Submitted` |
-| `test_admin_can_decide_on_submitted_semester_plan` | Creates a submitted student plan, logs in as admin, approves it, and verifies the plan status and feedback record |
-| `test_student_cannot_post_an_advisor_decision` | A student attempts to approve a submitted plan and the test verifies authorization failure, unchanged plan status, and no feedback |
-| `test_request_changes_without_a_comment_is_rejected` | An admin submits `Request changes` with an empty comment and the test verifies the plan remains `Submitted` with no feedback |
-| `test_course_with_unmet_prerequisite_cannot_be_added` | A student attempts to add `COMP 3605` without its prerequisite and the test verifies no plan-course row is created |
-| `test_advisor_cannot_decide_on_another_advisors_student` | An admin attempts to decide on a plan assigned to another advisor and the test verifies the plan remains `Submitted` with no feedback |
+| Test | Dependencies | Description |
+|---|---|---|
+| `test_health` | Test client, health route | Calls `GET /health` and verifies the application health endpoint returns HTTP 200 |
+| `test_public_landing_page_is_available` | Test client, in-memory database, landing route | With the isolated test database and no login, verifies that the public landing page returns HTTP 200 and displays MyAdvisor |
+| `test_student_dashboard_requires_login` | Test client, login route, authentication dependency | With no authentication cookie, verifies that the student dashboard redirects to the login page |
+| `test_authenticated_student_can_view_dashboard` | Test client, login route, seeded student, in-memory database | Logs in as the seeded student and verifies that the student dashboard returns HTTP 200 with degree-progress content |
+| `test_regular_user_cannot_view_admin_dashboard` | Test client, login route, seeded student, admin dependency | Logs in as a regular student and verifies that access to the admin dashboard returns HTTP 401 |
+| `test_admin_can_view_admin_dashboard` | Test client, login route, seeded admin, in-memory database | Logs in as the seeded admin and verifies that the admin dashboard returns HTTP 200 |
+| `test_users_api_returns_user_response_shape` | Test client, login route, admin dependency, user repository | Verifies unauthenticated `GET /api/users` is rejected, then verifies an authenticated admin receives only the `id`/`username`/`email` response fields |
+| `test_student_can_add_and_submit_a_semester_plan` | Test client, login route, plan service, in-memory database | Logs in as a student, adds `COMP 3603`, submits the plan, and verifies the database status is `Submitted` |
+| `test_admin_can_decide_on_submitted_semester_plan` | Test client, login route, plan service, advisor review service, in-memory database | Creates a submitted student plan, logs in as admin, approves it, and verifies the plan status and feedback record |
+| `test_student_cannot_post_an_advisor_decision` | Test client, student login, admin dependency, advisor review service | A student attempts to approve a submitted plan and the test verifies authorization failure, unchanged plan status, and no feedback |
+| `test_request_changes_without_a_comment_is_rejected` | Test client, admin login, advisor review service, feedback validation | An admin submits `Request changes` with an empty comment and the test verifies the plan remains `Submitted` with no feedback |
+| `test_course_with_unmet_prerequisite_cannot_be_added` | Test client, student login, plan service, prerequisite data | A student attempts to add `COMP 3605` without its prerequisite and the test verifies no plan-course row is created |
+| `test_advisor_cannot_decide_on_another_advisors_student` | Test client, admin login, advisor assignment data, advisor review service | An admin attempts to decide on a plan assigned to another advisor and the test verifies the plan remains `Submitted` with no feedback |
+
+The repository-focused unit test is an exception to the usual isolated unit
+boundary: it uses an in-memory SQLite database. The two template-source unit
+tests are also exceptions because they read template files. The remaining
+unit tests use mocked or in-memory service inputs without the application test
+client.
 
 All integration tests use the isolated in-memory SQLite fixture in
 `tests/conftest.py`; they do not modify the development database.
@@ -57,11 +63,11 @@ All integration tests use the isolated in-memory SQLite fixture in
 
 | Test Case | Pre-conditions | Test Steps | Test Criteria | Success (indicate with a check) |
 |---|---|---|---|---|
-| View Degree Progress | The student account exists and the tester is logged in as a student. | 1. Open the student dashboard.<br>2. Review the degree-progress cards. | The dashboard shows earned credits, required credits, core/elective course counts, and GPA. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
-| Build and Submit Semester Plan | The tester is logged in as a student and the course catalogue is available. | 1. Open **Build Plan**.<br>2. Select a valid course.<br>3. Add the course to the plan.<br>4. Submit the plan. | The selected course and total credits are displayed, the submission completes, and the plan status becomes `Submitted`. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
-| Review and Approve Semester Plan | A student plan is submitted and the tester is logged in as the assigned advisor/admin. | 1. Open the advisor dashboard.<br>2. Review the submitted plan.<br>3. Enter feedback.<br>4. Select **Approve**. | The plan is removed from the pending queue, the plan status becomes `Approved`, and the feedback is saved. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
-| Request Changes to a Semester Plan | A student plan is submitted and the tester is logged in as the assigned advisor/admin. | 1. Open the submitted plan.<br>2. Enter a non-empty feedback comment.<br>3. Select **Request Changes**. | The plan status becomes `Request Changes` and the feedback is available for the student to review. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
-| Prevent Invalid Plan Actions | The tester is logged in as a student and selects a course whose prerequisite has not been passed. | 1. Open **Build Plan**.<br>2. Attempt to add the course with the unmet prerequisite. | The course is not added, the plan remains unchanged, and the course status explains that a prerequisite is required. | ☑ Pass &nbsp;&nbsp; ☐ Fail |
+| View Degree Progress | The student account exists and the tester is logged in as a student. | 1. Open the student dashboard; 2. Review the degree-progress cards. | The dashboard shows earned credits, required credits, core/elective course counts, and GPA. | ☑ Pass / ☐ Fail |
+| Build and Submit Semester Plan | The tester is logged in as a student and the course catalogue is available. | 1. Open **Build Plan**; 2. Select a valid course; 3. Add the course to the plan; 4. Submit the plan. | The selected course and total credits are displayed, the submission completes, and the plan status becomes `Submitted`. | ☑ Pass / ☐ Fail |
+| Review and Approve Semester Plan | A student plan is submitted and the tester is logged in as the assigned advisor/admin. | 1. Open the advisor dashboard; 2. Review the submitted plan; 3. Enter feedback; 4. Select **Approve**. | The plan is removed from the pending queue, the plan status becomes `Approved`, and the feedback is saved. | ☑ Pass / ☐ Fail |
+| Request Changes to a Semester Plan | A student plan is submitted and the tester is logged in as the assigned advisor/admin. | 1. Open the submitted plan; 2. Enter a non-empty feedback comment; 3. Select **Request Changes**. | The plan status becomes `Request Changes` and the feedback is available for the student to review. | ☑ Pass / ☐ Fail |
+| Prevent Invalid Plan Actions | The tester is logged in as a student and selects a course whose prerequisite has not been passed. | 1. Open **Build Plan**; 2. Attempt to add the course with the unmet prerequisite. | The course is not added, the plan remains unchanged, and the course status explains that a prerequisite is required. | ☑ Pass / ☐ Fail |
 
 ### General Comments
 
@@ -71,7 +77,7 @@ ______________________________________________________________________________
 
 ______________________________________________________________________________
 
-**Acceptance Decision:** ☑ Accepted &nbsp;&nbsp; ☐ Rejected  
+**Acceptance Decision:** ☑ Accepted / ☐ Rejected  
 
 **Signature:**  
 

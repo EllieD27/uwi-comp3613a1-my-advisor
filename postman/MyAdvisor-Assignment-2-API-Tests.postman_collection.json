@@ -13,6 +13,11 @@
       "key": "baseUrl",
       "value": "http://127.0.0.1:5000",
       "type": "string"
+    },
+    {
+      "key": "planId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -35,17 +40,6 @@
             }
           },
           "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
-                ]
-              }
-            },
             {
               "listen": "test",
               "script": {
@@ -80,17 +74,6 @@
           },
           "event": [
             {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
-                ]
-              }
-            },
-            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -108,7 +91,7 @@
           ]
         },
         {
-          "name": "Users API response shape",
+          "name": "Users API requires admin authentication",
           "request": {
             "method": "GET",
             "header": [],
@@ -125,33 +108,13 @@
           },
           "event": [
             {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
-                ]
-              }
-            },
-            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test(\"Response is an array\", function () {",
-                  "    pm.expect(pm.response.json()).to.be.an(\"array\");",
-                  "});",
-                  "",
-                  "pm.test(\"Users contain only the public response fields\", function () {",
-                  "    pm.response.json().forEach(function (user) {",
-                  "        pm.expect(user).to.have.all.keys(\"id\", \"username\", \"email\");",
-                  "    });",
+                  "pm.test(\"Unauthenticated users API is rejected\", function () {",
+                  "    pm.response.to.have.status(303);",
+                  "    pm.expect(pm.response.headers.get(\"Location\") || \"\").to.include(\"/login\");",
                   "});"
                 ]
               }
@@ -318,17 +281,6 @@
           },
           "event": [
             {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
-                ]
-              }
-            },
-            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -360,12 +312,12 @@
               "urlencoded": [
                 {
                   "key": "username",
-                  "value": "student",
+                  "value": "bob",
                   "type": "text"
                 },
                 {
                   "key": "password",
-                  "value": "studentpass",
+                  "value": "bobpass",
                   "type": "text"
                 },
                 {
@@ -390,17 +342,6 @@
           },
           "event": [
             {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.cookies.jar().clear(pm.request.url, function (error) {",
-                  "    if (error) console.log(\"Could not clear cookies:\", error);",
-                  "});"
-                ]
-              }
-            },
-            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -412,6 +353,408 @@
                   "pm.test(\"Student is routed to student dashboard\", function () {",
                   "    const location = pm.response.headers.get(\"Location\") || \"\";",
                   "    pm.expect(decodeURIComponent(location)).to.include(\"/app\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authenticated workflow routes",
+      "item": [
+        {
+          "name": "Student login for workflow requests",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "bob",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "bobpass",
+                  "type": "text"
+                },
+                {
+                  "key": "next",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Student login succeeds\", function () {",
+                  "    pm.response.to.have.status(303);",
+                  "});",
+                  "pm.test(\"Student is routed to the application\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Location\") || \"\").to.include(\"/app\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Student opens build-plan page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/app/build-plan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "app",
+                "build-plan"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Build-plan page is available\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.text()).to.include(\"Build Plan\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Student adds a course to the plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/app/build-plan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "app",
+                "build-plan"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "course_code",
+                  "value": "COMP 3603",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Course add redirects back to build-plan\", function () {",
+                  "    pm.response.to.have.status(303);",
+                  "    pm.expect(pm.response.headers.get(\"Location\") || \"\").to.include(\"/app/build-plan\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Student submits the semester plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/app/build-plan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "app",
+                "build-plan"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "submit",
+                  "type": "text"
+                },
+                {
+                  "key": "course_code",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Plan submission redirects back to build-plan\", function () {",
+                  "    pm.response.to.have.status(303);",
+                  "    pm.expect(pm.response.headers.get(\"Location\") || \"\").to.include(\"/app/build-plan\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Student views my plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/app/my-plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "app",
+                "my-plans"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"My plans page is available\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.text()).to.include(\"My Plans\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin login for users API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "adminpass",
+                  "type": "text"
+                },
+                {
+                  "key": "next",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Admin login succeeds\", function () {",
+                  "    pm.response.to.have.status(303);",
+                  "    pm.expect(pm.response.headers.get(\"Location\") || \"\").to.include(\"/admin\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin opens pending plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Admin dashboard is available\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const match = pm.response.text().match(/\\/admin\\/plans\\/(\\d+)\\/decision/);",
+                  "    pm.expect(match, \"Expected a pending plan decision form\").to.not.equal(null);",
+                  "    pm.collectionVariables.set(\"planId\", match[1]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin approves submitted plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/plans/{{planId}}/decision",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plans",
+                "{{planId}}",
+                "decision"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "decision",
+                  "value": "Approve",
+                  "type": "text"
+                },
+                {
+                  "key": "comment",
+                  "value": "Plan is ready.",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Plan decision redirects to admin dashboard\", function () {",
+                  "    pm.response.to.have.status(303);",
+                  "    pm.expect(pm.response.headers.get(\"Location\") || \"\").to.include(\"/admin\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin reads users API",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Admin users API succeeds\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json()).to.be.an(\"array\");",
+                  "});",
+                  "pm.test(\"Users expose only safe fields\", function () {",
+                  "    pm.response.json().forEach(function (user) {",
+                  "        pm.expect(user).to.have.all.keys(\"id\", \"username\", \"email\");",
+                  "    });",
                   "});"
                 ]
               }
